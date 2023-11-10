@@ -32,7 +32,6 @@ describe('renderer', () => {
         },
       ],
     })
-    console.log(rendered)
     expect(rendered.props.class).toBe('text-primary')
   })
   it('should render a bold text', () => {
@@ -45,7 +44,6 @@ describe('renderer', () => {
         },
       ],
     })
-    console.log(renderer)
   })
   it('should render a h1', () => {
     const { render } = useSbRichtext()

@@ -36,7 +36,9 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "release-it",
+    "lint": "eslint --ext .ts,.tsx ."
   },
   "dependencies": {
     "@storyblok/vue": "^7.3.1",
