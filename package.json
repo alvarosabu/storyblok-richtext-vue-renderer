@@ -1,0 +1,59 @@
+{
+  "name": "@alvarosabu/storyblok-richtext-vue-renderer",
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@8.10.2",
+  "description": "A Vue 3 renderer for Storyblok Rich Text",
+  "author": "Alvaro Saburido <hola@alvarosaburido.dev> (https://github.com/alvarosabu/)",
+  "license": "MIT",
+  "keywords": [
+    "vue",
+    "vue3",
+    "storyblok",
+    "richtext",
+    "renderer"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/sb-vue-rich-text-renderer.umd.cjs",
+      "import": "./dist/sb-vue-rich-text-renderer.js"
+    },
+    "./*": "./*"
+  },
+  "main": "./dist/sb-vue-rich-text-renderer.js",
+  "module": "./dist/sb-vue-rich-text-renderer.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@storyblok/vue": "^7.3.1",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@alvarosabu/eslint-config-vue": "^0.4.0",
+    "@release-it/conventional-changelog": "^7.0.2",
+    "@types/node": "^20.8.10",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitest/ui": "^0.34.6",
+    "pathe": "^1.1.1",
+    "release-it": "^16.2.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.6.0",
+    "vitest": "^0.34.6",
+    "vue-tsc": "^1.8.5"
+  }
+}
