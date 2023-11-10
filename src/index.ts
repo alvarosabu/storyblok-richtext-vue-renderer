@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Component, RendererElement, RendererNode, VNode } from 'vue'
 import { createTextVNode, getCurrentInstance, h, resolveDynamicComponent } from 'vue'
+import SbRickText from './components/SbRichText.vue'
 
 export enum BlockTypes {
   DOCUMENT = 'doc',
@@ -199,4 +200,6 @@ export function useSbRichtext(options: SbRichtextOptions = {
     render,
   }
 }
+
+export { SbRickText }
 /* eslint-enable @typescript-eslint/ban-ts-comment */
