@@ -38,6 +38,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "release": "release-it",
+    "lint": "eslint --ext .ts,.vue --fix .",
     "playground:vue": "cd playground/vue && npm run dev",
     "playground:nuxt": "cd playground/nuxt && npm run dev"
   },
