@@ -38,10 +38,10 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "release": "release-it",
-    "lint": "eslint --ext .ts,.tsx ."
+    "playground:vue": "cd playground/vue && npm run dev",
+    "playground:nuxt": "cd playground/nuxt && npm run dev"
   },
   "dependencies": {
-    "@storyblok/vue": "^7.3.1",
     "vue": "^3.3.4"
   },
   "devDependencies": {
