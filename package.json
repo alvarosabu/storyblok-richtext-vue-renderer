@@ -1,7 +1,7 @@
 {
   "name": "@alvarosabu/storyblok-richtext-vue-renderer",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "packageManager": "pnpm@8.10.2",
   "description": "A Vue 3 renderer for Storyblok Rich Text",
   "author": "Alvaro Saburido <hola@alvarosaburido.dev> (https://github.com/alvarosabu/)",
