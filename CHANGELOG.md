@@ -1,5 +1,12 @@
 
 
+## [0.2.0-next.1](https://github.com/alvarosabu/vue-richtext/compare/0.2.0-next.0...0.2.0-next.1) (2024-03-27)
+
+
+### Bug Fixes
+
+* export types correctly ([16f4881](https://github.com/alvarosabu/vue-richtext/commit/16f488165f4136d33d696fdfc74c4ce1b6434489))
+
 ## [0.2.0-next.0](https://github.com/alvarosabu/vue-richtext/compare/0.1.2...0.2.0-next.0) (2024-03-27)
 
 
