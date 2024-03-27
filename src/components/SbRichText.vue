@@ -13,4 +13,4 @@ const root = () => render(props.doc)
 
 <template>
   <root />
-</template>
+</template>../richtext

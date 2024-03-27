@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { useSbRichtext } from '../src/'
+import { useSbRichtext } from '../src/richtext'
 
 describe('renderer', () => {
   it('should render a paragraph', () => {
