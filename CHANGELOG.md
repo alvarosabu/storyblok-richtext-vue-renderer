@@ -1,5 +1,12 @@
 
 
+## [0.2.0-next.0](https://github.com/alvarosabu/vue-richtext/compare/0.1.2...0.2.0-next.0) (2024-03-27)
+
+
+### Features
+
+* improved support for multiple resolvers, like images, emojis and marks ([dbce2ed](https://github.com/alvarosabu/vue-richtext/commit/dbce2edc310d19281c196b988b3f525bc588c233))
+
 ## [0.1.2](https://github.com/alvarosabu/vue-richtext/compare/0.1.1...0.1.2) (2024-03-06)
 
 
