@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSbRichtext } from '../'
 
-const props = defineProps<{ doc: any; resolvers?: any }>()
+const props = defineProps<{ doc: any, resolvers?: any }>()
 
 const { render } = useSbRichtext({
   resolvers: props.resolvers,

@@ -1,16 +1,16 @@
 <script setup>
-import { useStoryblok, useStoryblokApi } from '@storyblok/vue'
+import { useStoryblok } from '@storyblok/vue'
 import { SbRichText } from '@alvarosabu/storyblok-richtext-vue-renderer'
 
 const story = await useStoryblok('home', { version: 'draft' })
 
-const storyblokApi = useStoryblokApi()
+/* const storyblokApi = useStoryblokApi() */
 
-const { data: articles } = await storyblokApi.get('cdn/stories', {
+/* const { data: articles } = await storyblokApi.get('cdn/stories', {
   version: 'draft',
   starts_with: 'blog',
   is_startpage: false,
-})
+}) */
 
 const doc = {
   type: 'doc',
@@ -352,45 +352,42 @@ const doc = {
       ],
     },
     {
-      type: "blok",
+      type: 'blok',
       attrs: {
-        id: "5073eb4b-0d05-4e4f-a763-0eb673926235",
+        id: '5073eb4b-0d05-4e4f-a763-0eb673926235',
         body: [
           {
-            _uid: "i-6529255e-10b4-48be-8c6a-9bcf936c374e",
+            _uid: 'i-6529255e-10b4-48be-8c6a-9bcf936c374e',
             content: {
-              type: "doc",
+              type: 'doc',
               content: [
                 {
-                  type: "paragraph",
+                  type: 'paragraph',
                   content: [
                     {
-                      text: "Richtext inside Teaser",
-                      type: "text"
-                    }
-                  ]
-                }
-              ]
+                      text: 'Richtext inside Teaser',
+                      type: 'text',
+                    },
+                  ],
+                },
+              ],
             },
-            headline: "I'm a teaser",
-            component: "teaser",
-            _editable: "<!--#storyblok#{\"name\": \"teaser\", \"space\": \"279818\", \"uid\": \"i-6529255e-10b4-48be-8c6a-9bcf936c374e\", \"id\": \"459493710\"}-->"
-          }
-        ]
-      }
-    }
+            headline: 'I\'m a teaser',
+            component: 'teaser',
+            _editable: '<!--#storyblok#{"name": "teaser", "space": "279818", "uid": "i-6529255e-10b4-48be-8c6a-9bcf936c374e", "id": "459493710"}-->',
+          },
+        ],
+      },
+    },
   ],
 }
-
-const root = () => RichTextResolver(options).render(doc)
-
 </script>
- 
+
 <template>
-  <!-- <StoryblokComponent
+  <StoryblokComponent
     v-if="story"
     :blok="story.content"
-  /> -->
-  
+  />
+
   <SbRichText :doc="doc" />
 </template>

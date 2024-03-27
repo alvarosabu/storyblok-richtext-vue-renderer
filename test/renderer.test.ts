@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { useSbRichtext } from '../src/'
 
 describe('renderer', () => {
@@ -16,7 +16,7 @@ describe('renderer', () => {
     expect(rendered.type).toBe('p')
     expect(rendered.children.length).toBe(1)
     /* expect(`${rendered.type}`).toBe('Symbol(v-txt)')
-    rendered.type.   */  
+    rendered.type.   */
   })
   it('should render a paragraph with a class attr', () => {
     const { render } = useSbRichtext()

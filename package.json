@@ -16,8 +16,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/sb-vue-rich-text-renderer.umd.cjs",
-      "import": "./dist/sb-vue-rich-text-renderer.js"
+      "import": "./dist/sb-vue-rich-text-renderer.js",
+      "require": "./dist/sb-vue-rich-text-renderer.umd.cjs"
     },
     "./*": "./*"
   },
@@ -25,8 +25,8 @@
   "module": "./dist/sb-vue-rich-text-renderer.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "*.d.ts"
+    "*.d.ts",
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
@@ -38,7 +38,8 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "release": "release-it",
-    "lint": "eslint --ext .ts,.vue --fix .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "playground:vue": "cd playground/vue && npm run dev",
     "playground:nuxt": "cd playground/nuxt && npm run dev"
   },
@@ -46,11 +47,13 @@
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@alvarosabu/eslint-config": "^1.0.0",
     "@alvarosabu/eslint-config-vue": "^0.4.0",
     "@release-it/conventional-changelog": "^7.0.2",
     "@types/node": "^20.8.10",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vitest/ui": "^0.34.6",
+    "eslint": "^8.57.0",
     "pathe": "^1.1.1",
     "release-it": "^16.2.1",
     "typescript": "^5.0.2",

@@ -1,33 +1,33 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Component, RendererElement, RendererNode, VNode } from 'vue'
 import { createTextVNode, h, resolveDynamicComponent } from 'vue'
-import SbRichText from './components/SbRichText.vue'
 import { StoryblokComponent } from '@storyblok/vue'
-import { 
-  Node,
-  SbRichtextOptions,
-  NodeResolver,
-  TextNode,
+import SbRichText from './components/SbRichText.vue'
+import type {
   MarkNode,
-  LinkTypes,
+  Node,
+  NodeResolver,
   NodeTypes,
+  SbRichtextOptions,
+  TextNode,
+} from './types'
+import {
   BlockTypes,
-  TextTypes,
+  ComponentTypes,
+  LinkTypes,
   MarkTypes,
-  ComponentTypes 
+  TextTypes,
 } from './types'
 
 const attrsToStyle = (attrs: Record<string, string> = {}) => Object.keys(attrs)
   .map(key => `${key}: ${attrs[key]}`)
   .join('; ')
 
-
 export function useSbRichtext(options: SbRichtextOptions = {
   resolvers: {},
 }) {
   const renderFn = h
   const { resolvers = {} } = options
-/*   const components = getCurrentInstance()?.appContext.components */
+  /*   const components = getCurrentInstance()?.appContext.components */
 
   const nodeResolver = (tag: string): NodeResolver => (node: Node): VNode => renderFn(tag, node.attrs || {}, node.children)
 
@@ -69,7 +69,7 @@ export function useSbRichtext(options: SbRichtextOptions = {
       return marks
         ? marks.reduce(
           (text: VNode, mark: MarkNode) => renderToT({ ...mark, text }), // Fix: Ensure render function returns a string
-          renderToT({ ...rest, children: rest.children })
+          renderToT({ ...rest, children: rest.children }),
         ) as unknown as VNode
         : createTextVNode(rest.text) as VNode // Fix: Ensure escapeHtml returns a string
     }
@@ -98,7 +98,6 @@ export function useSbRichtext(options: SbRichtextOptions = {
     }, node.children)
   }
 
-
   const linkResolver: NodeResolver = ({ text, attrs }) => {
     let href = ''
 
@@ -112,7 +111,9 @@ export function useSbRichtext(options: SbRichtextOptions = {
         break
       case LinkTypes.STORY: {
         const RouterLink = resolveDynamicComponent('RouterLink') as Component
-        if (!RouterLink) return h('a', { href, target: attrs?.target }, text)
+        if (!RouterLink) {
+          return h('a', { href, target: attrs?.target }, text)
+        }
 
         return h(
           RouterLink,
@@ -124,7 +125,7 @@ export function useSbRichtext(options: SbRichtextOptions = {
 
     return h('a', { href: attrs?.href, target: attrs?.target }, text)
   }
-  
+
   const mergedResolvers = new Map<NodeTypes, NodeResolver>([
     [BlockTypes.DOCUMENT, nodeResolver('div')],
     [BlockTypes.HEADING, headingResolver],
@@ -152,11 +153,11 @@ export function useSbRichtext(options: SbRichtextOptions = {
     [MarkTypes.SUBSCRIPT, markResolver('sub')],
     [MarkTypes.HIGHLIGHT, markResolver('mark')],
     [ComponentTypes.COMPONENT, componentResolver],
-    // eslint-disable-next-line max-len
+
     ...(Object.entries(resolvers).map(([type, resolver]) => [type as NodeTypes, resolver])) as Array<[NodeTypes, NodeResolver]>,
-  
+
   ])
-  
+
   function renderNode(node: Node): VNode {
     const resolver = mergedResolvers.get(node.type)
     if (!resolver) {
@@ -166,16 +167,16 @@ export function useSbRichtext(options: SbRichtextOptions = {
     if (node.type === 'text') {
       return resolver(node)
     }
-    
+
     const children = node.content ? node.content.map(render) : undefined
-    
-    return resolver({ 
-      ...node, 
+
+    return resolver({
+      ...node,
       children: children as unknown as VNode,
     })
   }
-  
-  function render(node: Node | Node[]): VNode<RendererNode, RendererElement, { [key: string]: any; }>[] {
+
+  function render(node: Node | Node[]): VNode<RendererNode, RendererElement, { [key: string]: any }>[] {
     return Array.isArray(node) ? node.map(renderNode) : [renderNode(node)]
   }
 

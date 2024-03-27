@@ -1,10 +1,9 @@
 <script setup>
 import { SbRichText } from '@alvarosabu/storyblok-richtext-vue-renderer'
 
-const props = defineProps({ blok: Object })
-console.log(props)
+defineProps({ blok: Object })
 </script>
- 
+
 <template>
   <div
     v-editable="blok"
