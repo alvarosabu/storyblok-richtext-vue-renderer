@@ -15,7 +15,7 @@ app.component('Teaser', Teaser)
 app.component('Feature', Feature)
 
 app.use(StoryblokVue, {
-  accessToken: 'OurklwV5XsDJTIE1NJaD2wtt',
+  accessToken: 'xUMqa0Ka06Cfnrjb4M1e5Qtt',
   use: [apiPlugin],
 })
 

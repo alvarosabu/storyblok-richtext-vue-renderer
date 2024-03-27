@@ -1,120 +1,103 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { Component, RendererElement, RendererNode, VNode } from 'vue'
-import { createTextVNode, getCurrentInstance, h, resolveDynamicComponent } from 'vue'
+import { createTextVNode, h, resolveDynamicComponent } from 'vue'
 import SbRichText from './components/SbRichText.vue'
+import { StoryblokComponent } from '@storyblok/vue'
+import { 
+  Node,
+  SbRichtextOptions,
+  NodeResolver,
+  TextNode,
+  MarkNode,
+  LinkTypes,
+  NodeTypes,
+  BlockTypes,
+  TextTypes,
+  MarkTypes,
+  ComponentTypes 
+} from './types'
 
-export enum BlockTypes {
-  DOCUMENT = 'doc',
-  HEADING = 'heading',
-  PARAGRAPH = 'paragraph',
-  QUOTE = 'blockquote',
-  OL_LIST = 'ordered_list',
-  UL_LIST = 'bullet_list',
-  LIST_ITEM = 'list_item',
-  CODE_BLOCK = 'code_block',
-  HR = 'horizontal_rule',
-  BR = 'hard_break',
-  IMAGE = 'image',
-  EMOJI = 'emoji',
-  COMPONENT = 'blok',
-}
+const attrsToStyle = (attrs: Record<string, string> = {}) => Object.keys(attrs)
+  .map(key => `${key}: ${attrs[key]}`)
+  .join('; ')
 
-export enum MarkTypes {
-  BOLD = 'bold',
-  STRONG = 'strong',
-  STRIKE = 'strike',
-  UNDERLINE = 'underline',
-  ITALIC = 'italic',
-  CODE = 'code',
-  LINK = 'link',
-  ANCHOR = 'anchor',
-  STYLED = 'styled',
-  SUPERSCRIPT = 'superscript',
-  SUBSCRIPT = 'subscript',
-  TEXT_STYLE = 'textStyle',
-  HIGHLIGHT = 'highlight',
-}
 
-export enum TextTypes {
-  TEXT = 'text',
-}
-
-export enum ComponentTypes {
-  COMPONENT = 'blok',
-}
-
-export enum LinkTargets {
-  SELF = '_self',
-  BLANK = '_blank',
-}
-
-export enum LinkTypes {
-  URL = 'url',
-  STORY = 'story',
-  ASSET = 'asset',
-  EMAIL = 'email',
-}
-
-export type NodeTypes = BlockTypes | MarkTypes | TextTypes | ComponentTypes
-
-export interface Node {
-  type: NodeTypes
-  content: Node[]
-  children?: VNode[]
-  attrs?: Record<string, any>
-  text?: string
-}
-
-export interface MarkNode extends Node {
-  // eslint-disable-next-line max-len
-  type: MarkTypes.BOLD | MarkTypes.ITALIC | MarkTypes.UNDERLINE | MarkTypes.STRIKE | MarkTypes.CODE | MarkTypes.LINK | MarkTypes.ANCHOR | MarkTypes.STYLED | MarkTypes.SUPERSCRIPT | MarkTypes.SUBSCRIPT | MarkTypes.TEXT_STYLE | MarkTypes.HIGHLIGHT
-  attrs?: Record<string, any>
-}
-
-export interface TextNode extends Node {
-  type: TextTypes.TEXT
-  text: string
-  marks?: MarkNode[]
-}
-export type RenderedNode = ReturnType<typeof h>
-export type NodeResolver = (node: Node | TextNode | MarkNode) => VNode<RendererNode, RendererElement, {
-  [key: string]: any
-}>
-
-export interface SbRichtextOptions {
-  resolvers?: Array<[NodeTypes, NodeResolver]>
-}
 export function useSbRichtext(options: SbRichtextOptions = {
-  resolvers: [],
+  resolvers: {},
 }) {
+  const renderFn = h
   const { resolvers = {} } = options
-  const components = getCurrentInstance()?.appContext.components
+/*   const components = getCurrentInstance()?.appContext.components */
 
-  const nodeResolver = (tag: string): NodeResolver => 
-    ({ children, attrs }) => h(tag, attrs, children)
+  const nodeResolver = (tag: string): NodeResolver => (node: Node): VNode => renderFn(tag, node.attrs || {}, node.children)
 
-  // @ts-expect-error
-  const textResolver: NodeResolver = ({ marks, ...node }) => {
+  const headingResolver: NodeResolver = (node: Node): VNode => renderFn(`h${node.attrs?.level}`, node.attrs || {}, node.children)
+
+  const emojiResolver: NodeResolver = (node: Node): VNode => renderFn('span', {
+    'data-type': 'emoji',
+    'data-name': node.attrs?.name,
+    'emoji': node.attrs?.emoji,
+  }, renderFn('img', {
+    src: node.attrs?.fallbackImage,
+    alt: node.attrs?.alt,
+    style: 'width: 1.25em; height: 1.25em; vertical-align: text-top',
+    draggable: 'false',
+    loading: 'lazy',
+  }, ''))
+
+  // Mark resolver for text formatting
+  const markResolver = (tag: string, styled = false): NodeResolver => ({ text, attrs }): VNode => {
+    return renderFn(tag, styled
+      ? {
+          style: attrsToStyle(attrs),
+        }
+      : attrs || {}, text as string)
+  }
+
+  const renderToT = (node: any): VNode => {
+    // Implementation that ensures the return type is T
+    // This might involve checking the type of T and handling accordingly
+    return render(node) as unknown as VNode
+  }
+
+  // Resolver for plain text nodes
+  const textResolver: NodeResolver = (node: Node): VNode => {
+    const { marks, ...rest } = node as TextNode
     if ('text' in node) {
       // Now TypeScript knows that 'node' is a TextNode, so 'marks' can be accessed
-      return marks ? marks.reduce(
-        (text: string, mark: MarkNode) => render({ ...mark, text }),
-        render(node),
-      ) : createTextVNode(node.text)
+
+      return marks
+        ? marks.reduce(
+          (text: VNode, mark: MarkNode) => renderToT({ ...mark, text }), // Fix: Ensure render function returns a string
+          renderToT({ ...rest, children: rest.children })
+        ) as unknown as VNode
+        : createTextVNode(rest.text) as VNode // Fix: Ensure escapeHtml returns a string
+    }
+    else {
+      return h('') // Fix: Ensure empty string is of type string
     }
   }
 
-  const headingResolver: NodeResolver = ({ children, attrs }) => h(`h${attrs?.level}`, attrs, children)
+  const codeBlockResolver: NodeResolver = (node: Node): VNode => {
+    return renderFn('pre', {
+      pros: node.attrs?.pros,
+    }, renderFn('code', {}, node.children || '' as any))
+  }
 
-  const markResolver = (tag: string): NodeResolver => ({ text, attrs }) => h(tag, attrs, text)
-
-  const componentResolver: NodeResolver = ({ attrs, children }) => {
+  /* const componentResolver: NodeResolver = ({ attrs, children }) => {
     const { component, file, _preview, preview, _editable, ...rest } = attrs?.body[0]
     return components ? h(components[attrs?.body[0].component], {
       id: attrs?.id,
       blok: rest,
     }, children) : h('div', {}, children)
+  } */
+  const componentResolver: NodeResolver = (node: Node): VNode => {
+    return renderFn(StoryblokComponent, {
+      blok: node?.attrs?.body[0],
+      id: node.attrs?.id,
+    }, node.children)
   }
+
 
   const linkResolver: NodeResolver = ({ text, attrs }) => {
     let href = ''
@@ -143,30 +126,30 @@ export function useSbRichtext(options: SbRichtextOptions = {
   }
   
   const mergedResolvers = new Map<NodeTypes, NodeResolver>([
-    [BlockTypes.DOCUMENT, ({ children }) => h('div', {}, children)],
-    [BlockTypes.PARAGRAPH, nodeResolver('p')],
+    [BlockTypes.DOCUMENT, nodeResolver('div')],
     [BlockTypes.HEADING, headingResolver],
-    [BlockTypes.QUOTE, nodeResolver('blockquote')],
+    [BlockTypes.PARAGRAPH, nodeResolver('p')],
     [BlockTypes.UL_LIST, nodeResolver('ul')],
     [BlockTypes.OL_LIST, nodeResolver('ol')],
     [BlockTypes.LIST_ITEM, nodeResolver('li')],
-    [BlockTypes.IMAGE, ({ attrs }) => h('img', attrs)],
-    [BlockTypes.EMOJI, ({ attrs }) => h('span', attrs)],
-    [BlockTypes.CODE_BLOCK, ({ attrs, content }) => h('pre', attrs, [h('code', {}, content[0].text)])],
+    [BlockTypes.IMAGE, nodeResolver('img')],
+    [BlockTypes.EMOJI, emojiResolver],
+    [BlockTypes.CODE_BLOCK, codeBlockResolver],
+    [BlockTypes.QUOTE, nodeResolver('blockquote')],
     [BlockTypes.HR, nodeResolver('hr')],
     [BlockTypes.BR, nodeResolver('br')],
     [TextTypes.TEXT, textResolver],
+    [MarkTypes.LINK, linkResolver],
+    [MarkTypes.ANCHOR, linkResolver],
+    [MarkTypes.STYLED, markResolver('span')],
     [MarkTypes.BOLD, markResolver('strong')],
+    [MarkTypes.TEXT_STYLE, markResolver('span', true)],
     [MarkTypes.ITALIC, markResolver('em')],
     [MarkTypes.UNDERLINE, markResolver('u')],
     [MarkTypes.STRIKE, markResolver('s')],
     [MarkTypes.CODE, markResolver('code')],
-    [MarkTypes.LINK, linkResolver],
-    [MarkTypes.ANCHOR, ({ attrs = {}, children }) => h('a', { id: attrs.id }, children)],
-    [MarkTypes.STYLED, ({ attrs = {}, children }) => h(attrs.style, {}, children)],
     [MarkTypes.SUPERSCRIPT, markResolver('sup')],
     [MarkTypes.SUBSCRIPT, markResolver('sub')],
-    [MarkTypes.TEXT_STYLE, ({ attrs = {}, children }) => h('span', { style: attrs.style }, children)],
     [MarkTypes.HIGHLIGHT, markResolver('mark')],
     [ComponentTypes.COMPONENT, componentResolver],
     // eslint-disable-next-line max-len
@@ -174,7 +157,7 @@ export function useSbRichtext(options: SbRichtextOptions = {
   
   ])
   
-  function renderNode(node: Node): RenderedNode {
+  function renderNode(node: Node): VNode {
     const resolver = mergedResolvers.get(node.type)
     if (!resolver) {
       throw new Error(`No resolver found for node type ${node.type}`)
@@ -188,12 +171,12 @@ export function useSbRichtext(options: SbRichtextOptions = {
     
     return resolver({ 
       ...node, 
-      children: children as VNode[],
+      children: children as unknown as VNode,
     })
   }
   
-  function render(node: Node | Node[]): RenderedNode | RenderedNode[] {
-    return Array.isArray(node) ? node.map(renderNode) : renderNode(node)
+  function render(node: Node | Node[]): VNode<RendererNode, RendererElement, { [key: string]: any; }>[] {
+    return Array.isArray(node) ? node.map(renderNode) : [renderNode(node)]
   }
 
   return {
@@ -202,4 +185,3 @@ export function useSbRichtext(options: SbRichtextOptions = {
 }
 
 export { SbRichText }
-/* eslint-enable @typescript-eslint/ban-ts-comment */
